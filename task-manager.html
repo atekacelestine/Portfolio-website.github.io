@@ -3,339 +3,889 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Celestine Ateka — Software Engineer</title>
+  <title>Task Manager — Celestine Ateka</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg:      #080810;
-      --bg2:     #0e0e1a;
-      --bg3:     #13131f;
-      --bg4:     #1a1a28;
-      --border:  rgba(255,255,255,0.06);
-      --border2: rgba(255,255,255,0.11);
-      --text:    #eae8f5;
-      --muted:   #6e6c85;
-      --accent:  #8b7cf8;
-      --accent2: #b8a9ff;
-      --green:   #4ade9c;
-      --orange:  #f97c4a;
-      --pink:    #e879a0;
-      --blue:    #38bdf8;
+      --bg:#080810;--bg2:#0e0e1a;--bg3:#13131f;--bg4:#1a1a28;
+      --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.12);
+      --text:#eae8f5;--muted:#6e6c85;--dim:#3a3855;
+      --accent:#8b7cf8;--accent2:#b8a9ff;
+      --green:#4ade9c;--orange:#f97c4a;--pink:#e879a0;--red:#f87171;--blue:#38bdf8;
     }
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
     html{scroll-behavior:smooth}
-    body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;font-size:16px;line-height:1.6;overflow-x:hidden}
+    body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:3rem 1.5rem 5rem}
     body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(139,124,248,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(139,124,248,0.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0}
-    .cursor-glow{position:fixed;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(139,124,248,0.055) 0%,transparent 70%);pointer-events:none;transform:translate(-50%,-50%);transition:left .14s ease,top .14s ease;z-index:0}
-    nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.1rem 3rem;display:flex;justify-content:space-between;align-items:center;background:rgba(8,8,16,0.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
-    .nav-logo{font-family:'JetBrains Mono',monospace;font-size:.82rem;font-weight:500;letter-spacing:.04em;color:var(--accent2)}
-    .nav-logo span{color:var(--muted)}
-    .nav-links{display:flex;gap:2rem;list-style:none}
-    .nav-links a{font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:400;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
-    .nav-links a:hover{color:var(--text)}
-    .status-pill{display:flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;letter-spacing:.08em;color:var(--green);background:rgba(74,222,156,0.08);border:1px solid rgba(74,222,156,0.18);padding:.3rem .75rem;border-radius:100px}
-    .status-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s ease-in-out infinite}
-    @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
-    .container{max-width:1000px;margin:0 auto;padding:0 2.5rem;position:relative;z-index:1}
-    header{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:8rem 0 5rem}
-    .hero-tag{font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:400;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:1.8rem;opacity:0;animation:fadeUp .7s ease forwards .2s;display:flex;align-items:center;gap:.8rem}
-    .hero-tag::before{content:'';display:inline-block;width:30px;height:1px;background:var(--accent)}
-    header h1{font-size:clamp(3.5rem,9vw,7.5rem);font-weight:800;letter-spacing:-.03em;line-height:.95;opacity:0;animation:fadeUp .8s ease forwards .35s}
-    .name-accent{background:linear-gradient(135deg,var(--accent) 0%,var(--pink) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-    .hero-desc{margin-top:2rem;font-size:1.05rem;font-weight:400;color:var(--muted);max-width:480px;line-height:1.7;opacity:0;animation:fadeUp .8s ease forwards .5s}
-    .hero-cta{margin-top:2.8rem;display:flex;gap:1rem;flex-wrap:wrap;opacity:0;animation:fadeUp .8s ease forwards .65s}
-    .btn-primary,.btn-ghost{font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;padding:.75rem 1.6rem;border-radius:6px;transition:all .22s ease;display:inline-flex;align-items:center;gap:.5rem}
-    .btn-primary{background:var(--accent);color:#fff;border:1px solid var(--accent)}
-    .btn-primary:hover{background:var(--accent2);border-color:var(--accent2);transform:translateY(-2px)}
-    .btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border2)}
-    .btn-ghost:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
-    .hero-stats{margin-top:4.5rem;display:flex;gap:2.5rem;padding-top:2.5rem;border-top:1px solid var(--border);opacity:0;animation:fadeUp .8s ease forwards .8s}
-    .stat-item .num{font-size:1.9rem;font-weight:800;color:var(--text);line-height:1}
-    .stat-item .num span{color:var(--accent)}
-    .stat-item .lbl{font-family:'JetBrains Mono',monospace;font-size:.66rem;font-weight:400;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:4px}
-    section{padding:6rem 0}
-    .sec-label{font-family:'JetBrains Mono',monospace;font-size:.66rem;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:.6rem}
-    .sec-title{font-size:clamp(1.8rem,4vw,2.6rem);font-weight:700;letter-spacing:-.02em;margin-bottom:3.5rem}
-    .skills-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden}
-    .skill-card{background:var(--bg2);padding:1.5rem 1.4rem;display:flex;flex-direction:column;gap:.7rem;transition:background .2s ease;cursor:default}
-    .skill-card:hover{background:var(--bg4)}
-    .skill-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem}
-    .skill-name{font-size:.9rem;font-weight:600;color:var(--text)}
-    .skill-bar-track{height:3px;background:var(--border2);border-radius:2px;overflow:hidden}
-    .skill-bar-fill{height:100%;border-radius:2px;width:0;transition:width 1.2s cubic-bezier(.16,1,.3,1)}
-    .skill-pct{font-family:'JetBrains Mono',monospace;font-size:.65rem;font-weight:400;color:var(--muted);letter-spacing:.05em}
-    .projects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:1.5rem}
-    .project-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:2rem;display:flex;flex-direction:column;transition:border-color .25s ease,transform .25s ease;position:relative;overflow:hidden}
-    .project-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;opacity:0;transition:opacity .3s ease}
-    .project-card:hover{border-color:var(--border2);transform:translateY(-4px)}
-    .project-card:hover::before{opacity:1}
-    .project-card.purple::before{background:linear-gradient(90deg,var(--accent),var(--pink))}
-    .project-card.orange::before{background:linear-gradient(90deg,var(--orange),#fbbf24)}
-    .project-card.green::before{background:linear-gradient(90deg,var(--green),var(--blue))}
-    .project-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem}
-    .project-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem}
-    .project-status{font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:400;letter-spacing:.1em;padding:.25rem .7rem;border-radius:100px}
-    .status-live{background:rgba(74,222,156,0.1);color:var(--green);border:1px solid rgba(74,222,156,0.2)}
-    .status-wip{background:rgba(249,124,74,0.1);color:var(--orange);border:1px solid rgba(249,124,74,0.2)}
-    .project-card h3{font-size:1.2rem;font-weight:700;letter-spacing:-.01em;margin-bottom:.6rem}
-    .project-card p{font-size:.9rem;color:var(--muted);line-height:1.65;flex:1}
-    .project-tags{display:flex;flex-wrap:wrap;gap:.4rem;margin:1.2rem 0}
-    .tag{font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:400;letter-spacing:.06em;color:var(--muted);background:var(--bg3);border:1px solid var(--border);padding:.2rem .6rem;border-radius:4px}
-    .project-links{display:flex;gap:.7rem;margin-top:auto;padding-top:1.2rem;border-top:1px solid var(--border)}
-    .plink{font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:500;letter-spacing:.08em;text-decoration:none;padding:.45rem 1rem;border-radius:6px;transition:all .2s ease;display:inline-flex;align-items:center;gap:.4rem}
-    .plink-solid{background:var(--bg4);color:var(--text);border:1px solid var(--border2)}
-    .plink-solid:hover{background:var(--accent);border-color:var(--accent);color:#fff}
-    .plink-ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}
-    .plink-ghost:hover{color:var(--text);border-color:var(--border2)}
-    .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start}
-    .about-text h3{font-size:1.1rem;font-weight:600;margin-bottom:.8rem}
-    .about-text p{color:var(--muted);font-size:.95rem;line-height:1.75;margin-bottom:1.2rem}
-    .terminal{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden}
-    .terminal-bar{background:var(--bg3);padding:.7rem 1rem;display:flex;align-items:center;gap:.5rem;border-bottom:1px solid var(--border)}
-    .t-dot{width:10px;height:10px;border-radius:50%}
-    .terminal-body{padding:1.2rem 1.5rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;line-height:1.8}
-    .t-prompt{color:var(--accent)}.t-cmd{color:var(--text)}.t-comment{color:var(--muted)}.t-str{color:var(--green)}.t-key{color:var(--accent2)}.t-num{color:var(--orange)}
-    .interests-row{display:flex;gap:.8rem;flex-wrap:wrap;margin-top:1.5rem}
-    .interest-chip{display:flex;align-items:center;gap:.5rem;background:var(--bg3);border:1px solid var(--border);border-radius:100px;padding:.45rem 1rem;font-size:.8rem;font-weight:500}
-    .chip-dot{width:7px;height:7px;border-radius:50%}
-    .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
-    .contact-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1.5rem 1.6rem;display:flex;align-items:center;gap:1rem;text-decoration:none;color:var(--text);transition:border-color .2s,transform .2s}
-    .contact-card:hover{border-color:var(--accent);transform:translateY(-2px)}
-    .contact-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
-    .contact-label{font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:400;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.2rem}
-    .contact-value{font-size:.88rem;font-weight:500}
-    .contact-wide{grid-column:1/-1}
-    .cta-band{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:3rem 2.5rem;display:flex;justify-content:space-between;align-items:center;gap:2rem;margin-bottom:4rem;position:relative;overflow:hidden}
-    .cta-band::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent)}
-    .cta-band h3{font-size:1.5rem;font-weight:700;letter-spacing:-.01em;margin-bottom:.4rem}
-    .cta-band p{font-size:.9rem;color:var(--muted)}
-    footer{border-top:1px solid var(--border);padding:2rem 0;display:flex;justify-content:space-between;align-items:center}
-    footer span{font-family:'JetBrains Mono',monospace;font-size:.65rem;font-weight:400;letter-spacing:.1em;color:var(--muted)}
-    @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+    .glow{position:fixed;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(139,124,248,0.07) 0%,transparent 70%);pointer-events:none;transform:translate(-50%,-50%);transition:left .14s ease,top .14s ease;z-index:0}
+    .back-link{position:fixed;top:1.4rem;left:2rem;font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-decoration:none;display:flex;align-items:center;gap:.4rem;transition:color .2s;z-index:100}
+    .back-link:hover{color:var(--accent2)}
+    .app{position:relative;z-index:1;width:100%;max-width:800px;margin-top:1rem}
+
+    /* HEADER */
+    .app-header{margin-bottom:2rem;animation:fadeUp .6s ease both .1s}
+    .app-eyebrow{font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:.7rem;display:flex;align-items:center;gap:.6rem}
+    .app-eyebrow::before{content:'';width:22px;height:1px;background:var(--accent)}
+    .app-title{font-size:clamp(2rem,5vw,3rem);font-weight:800;letter-spacing:-.025em;line-height:1}
+    .app-title .hi{color:var(--accent2)}
+
+    /* STATS */
+    .stats-bar{display:flex;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:2rem;animation:fadeUp .6s ease both .2s}
+    .stat{flex:1;background:var(--bg2);padding:.9rem 1rem;display:flex;flex-direction:column;align-items:center;gap:2px}
+    .stat .val{font-size:1.4rem;font-weight:800;line-height:1}
+    .stat .lbl{font-family:'JetBrains Mono',monospace;font-size:.6rem;font-weight:400;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+
+    /* MAIN LAYOUT */
+    .main-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start;animation:fadeUp .6s ease both .3s}
+    @media(max-width:700px){.main-grid{grid-template-columns:1fr}}
+
+    /* PANEL */
+    .panel{background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+    .panel-header{padding:.85rem 1.2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+    .panel-title{font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
+    .panel-body{padding:1.2rem}
+
+    /* ADD TASK FORM */
+    .form-group{margin-bottom:.9rem}
+    .form-label{font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem;display:block}
+    .form-input{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:.7rem .9rem;font-family:'Syne',sans-serif;font-size:.9rem;font-weight:400;color:var(--text);outline:none;transition:border-color .2s,box-shadow .2s}
+    .form-input::placeholder{color:var(--dim)}
+    .form-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(139,124,248,0.1)}
+    textarea.form-input{resize:vertical;min-height:70px;line-height:1.5}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+    select.form-input{cursor:pointer}
+    select.form-input option{background:var(--bg3);color:var(--text)}
+
+    .add-btn{width:100%;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:.8rem;font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .2s,transform .15s;margin-top:.4rem}
+    .add-btn:hover{background:var(--accent2);transform:translateY(-1px)}
+    .add-btn:active{transform:scale(.98)}
+
+    /* CALENDAR */
+    .cal-nav{display:flex;align-items:center;justify-content:space-between}
+    .cal-month{font-size:.95rem;font-weight:700;letter-spacing:-.01em}
+    .cal-arrow{background:transparent;border:1px solid var(--border);border-radius:6px;color:var(--muted);width:28px;height:28px;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:all .2s}
+    .cal-arrow:hover{border-color:var(--accent);color:var(--accent)}
+    .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-top:.9rem}
+    .cal-day-name{font-family:'JetBrains Mono',monospace;font-size:.58rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);text-align:center;padding:.3rem 0}
+    .cal-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .2s;position:relative;border:1px solid transparent}
+    .cal-day:hover{background:var(--bg4);border-color:var(--border2)}
+    .cal-day.empty{cursor:default;pointer-events:none}
+    .cal-day.today{border-color:var(--accent);color:var(--accent)}
+    .cal-day.selected{background:var(--accent);color:#fff;border-color:var(--accent)}
+    .cal-day.has-task::after{content:'';position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--green)}
+    .cal-day.selected.has-task::after{background:#fff}
+    .cal-day.other-month{opacity:.25}
+    .cal-day.has-reminder::before{content:'';position:absolute;top:3px;right:3px;width:4px;height:4px;border-radius:50%;background:var(--orange)}
+
+    /* TASK LIST PANEL */
+    .filter-tabs{display:flex;gap:.4rem;padding:.8rem 1.2rem;border-bottom:1px solid var(--border);flex-wrap:wrap}
+    .tab{font-family:'JetBrains Mono',monospace;font-size:.6rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .7rem;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .2s}
+    .tab:hover{color:var(--text);border-color:var(--border2)}
+    .tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+    .task-list{padding:.8rem;display:flex;flex-direction:column;gap:.5rem;max-height:420px;overflow-y:auto}
+    .task-list::-webkit-scrollbar{width:4px}
+    .task-list::-webkit-scrollbar-track{background:transparent}
+    .task-list::-webkit-scrollbar-thumb{background:var(--dim);border-radius:2px}
+
+    .task-item{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:.8rem 1rem;transition:border-color .2s,transform .2s;position:relative;overflow:hidden;cursor:pointer}
+    .task-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;transition:opacity .2s}
+    .task-item.p-high::before{background:var(--red);opacity:.7}
+    .task-item.p-med::before{background:var(--orange);opacity:.7}
+    .task-item.p-low::before{background:var(--green);opacity:.7}
+    .task-item:hover{border-color:var(--border2);transform:translateX(2px)}
+    .task-item.done-item{opacity:.45}
+    .task-item.done-item .ti-title{text-decoration:line-through;color:var(--muted)}
+
+    .ti-row1{display:flex;align-items:flex-start;gap:.6rem}
+    .ti-check{width:18px;height:18px;flex-shrink:0;border-radius:5px;border:1.5px solid var(--border2);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;color:transparent;font-size:.65rem;margin-top:2px}
+    .ti-check:hover{border-color:var(--accent);color:var(--accent)}
+    .task-item.done-item .ti-check{background:var(--accent);border-color:var(--accent);color:#fff}
+    .ti-content{flex:1;min-width:0}
+    .ti-title{font-size:.88rem;font-weight:700;line-height:1.3;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .ti-desc{font-size:.75rem;color:var(--muted);line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .ti-del{width:24px;height:24px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.75rem;transition:all .2s;flex-shrink:0}
+    .ti-del:hover{background:rgba(248,113,113,0.1);border-color:rgba(248,113,113,0.3);color:var(--red)}
+
+    .ti-row2{display:flex;align-items:center;gap:.4rem;margin-top:.5rem;flex-wrap:wrap}
+    .badge{font-family:'JetBrains Mono',monospace;font-size:.58rem;font-weight:500;letter-spacing:.06em;padding:.15rem .45rem;border-radius:4px}
+    .b-high{background:rgba(248,113,113,0.1);color:var(--red);border:1px solid rgba(248,113,113,0.2)}
+    .b-med{background:rgba(249,124,74,0.1);color:var(--orange);border:1px solid rgba(249,124,74,0.2)}
+    .b-low{background:rgba(74,222,156,0.1);color:var(--green);border:1px solid rgba(74,222,156,0.2)}
+    .b-date{background:rgba(56,189,248,0.08);color:var(--blue);border:1px solid rgba(56,189,248,0.15)}
+    .b-reminder{background:rgba(249,124,74,0.08);color:var(--orange);border:1px solid rgba(249,124,74,0.15)}
+    .b-cat{background:rgba(139,124,248,0.08);color:var(--accent2);border:1px solid rgba(139,124,248,0.15)}
+    .b-overdue{background:rgba(248,113,113,0.1);color:var(--red);border:1px solid rgba(248,113,113,0.3)}
+
+    /* EMPTY */
+    .empty-state{text-align:center;padding:2.5rem 1rem}
+    .empty-icon{font-size:2rem;margin-bottom:.8rem;opacity:.4}
+    .empty-state p{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted);letter-spacing:.06em}
+
+    /* BOTTOM BAR */
+    .bottom-bar{display:flex;justify-content:flex-end;gap:.6rem;padding:.8rem 1rem;border-top:1px solid var(--border)}
+    .ghost-btn{font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;padding:.35rem .8rem;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .2s}
+    .ghost-btn:hover{border-color:var(--red);color:var(--red)}
+
+    /* MODAL (TASK DETAIL) */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.65);backdrop-filter:blur(4px);z-index:200;display:none;align-items:center;justify-content:center;padding:1.5rem}
+    .modal-overlay.open{display:flex}
+    .modal{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;animation:modalIn .25s cubic-bezier(.16,1,.3,1)}
+    @keyframes modalIn{from{opacity:0;transform:scale(.94) translateY(10px)}to{opacity:1;transform:none}}
+    .modal-header{padding:1.3rem 1.5rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+    .modal-title-text{font-size:1rem;font-weight:700;letter-spacing:-.01em}
+    .modal-close{width:30px;height:30px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.9rem;transition:all .2s}
+    .modal-close:hover{border-color:var(--red);color:var(--red)}
+    .modal-body{padding:1.3rem 1.5rem}
+    .modal-label{font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:.35rem;margin-top:1rem;display:block}
+    .modal-label:first-child{margin-top:0}
+    .modal-val{font-size:.92rem;font-weight:500;color:var(--text);line-height:1.5}
+    .modal-desc{font-size:.85rem;color:var(--muted);line-height:1.6}
+    .modal-footer{padding:.9rem 1.5rem;border-top:1px solid var(--border);display:flex;gap:.7rem;flex-wrap:wrap}
+    .modal-btn{font-family:'JetBrains Mono',monospace;font-size:.65rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;padding:.45rem .9rem;border-radius:7px;cursor:pointer;transition:all .2s;border:1px solid var(--border2);background:transparent;color:var(--text)}
+    .modal-btn:hover{background:var(--bg4)}
+    .modal-btn.danger{border-color:rgba(248,113,113,0.3);color:var(--red)}
+    .modal-btn.danger:hover{background:rgba(248,113,113,0.1)}
+    .modal-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+    .modal-btn.primary:hover{background:var(--accent2);border-color:var(--accent2)}
+    .modal-btn.success{background:var(--green);border-color:var(--green);color:#080810}
+    .modal-btn.success:hover{opacity:.88}
+
+    /* EDIT FORM inside modal */
+    .edit-form .form-group{margin-bottom:.85rem}
+    .edit-form .form-label{font-family:'JetBrains Mono',monospace;font-size:.6rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:.35rem;display:block}
+    .edit-form .form-input{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:.65rem .9rem;font-family:'Syne',sans-serif;font-size:.88rem;font-weight:400;color:var(--text);outline:none;transition:border-color .2s,box-shadow .2s}
+    .edit-form .form-input::placeholder{color:var(--dim)}
+    .edit-form .form-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(139,124,248,0.1)}
+    .edit-form textarea.form-input{resize:vertical;min-height:65px;line-height:1.5}
+    .edit-form select.form-input{cursor:pointer}
+    .edit-form select.form-input option{background:var(--bg3);color:var(--text)}
+    .edit-form .form-row{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+
+    /* edit pencil btn on task card */
+    .ti-edit{width:24px;height:24px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.75rem;transition:all .2s;flex-shrink:0}
+    .ti-edit:hover{background:rgba(139,124,248,0.1);border-color:rgba(139,124,248,0.3);color:var(--accent)}
+
+    /* SUB-ITEMS */
+    .sub-items{display:flex;flex-direction:column;gap:3px;margin-top:.55rem;padding-top:.55rem;border-top:1px solid var(--border)}
+    .sub-item{display:flex;align-items:center;gap:.55rem;cursor:pointer;padding:.25rem .3rem;border-radius:5px;transition:background .15s;user-select:none}
+    .sub-item:hover{background:var(--bg4)}
+    .sub-icon{width:17px;height:17px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;flex-shrink:0;transition:all .2s}
+    .sub-icon.done-icon{background:rgba(74,222,156,0.15);color:var(--green);border:1.5px solid rgba(74,222,156,0.35)}
+    .sub-icon.undone-icon{background:rgba(248,113,113,0.1);color:var(--red);border:1.5px solid rgba(248,113,113,0.25)}
+    .sub-label{font-size:.8rem;font-weight:500;line-height:1.3;flex:1}
+    .sub-label.done-label{text-decoration:line-through;color:var(--muted)}
+    .sub-progress{display:flex;align-items:center;gap:.5rem;margin-top:.4rem}
+    .sub-progress-track{flex:1;height:2px;background:var(--border2);border-radius:1px;overflow:hidden}
+    .sub-progress-fill{height:100%;border-radius:1px;background:var(--green);transition:width .4s ease}
+    .sub-progress-label{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--muted);white-space:nowrap}
+
+    /* TOAST */
+    .toast-wrap{position:fixed;bottom:2rem;right:2rem;z-index:300;display:flex;flex-direction:column;gap:.5rem}
+    .toast{background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:.7rem 1.1rem;font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.04em;color:var(--text);display:flex;align-items:center;gap:.6rem;animation:toastIn .3s ease;max-width:300px}
+    .toast.removing{animation:toastOut .3s ease forwards}
+    @keyframes toastIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
+    @keyframes toastOut{to{opacity:0;transform:translateX(20px)}}
+    .toast-icon{font-size:.9rem}
+
+    /* PORTFOLIO BADGE */
+    .portfolio-badge{margin-top:3rem;display:flex;align-items:center;gap:.7rem;font-family:'JetBrains Mono',monospace;font-size:.65rem;font-weight:400;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);animation:fadeUp .6s ease both .75s}
+    .portfolio-badge a{color:var(--accent);text-decoration:none;transition:color .2s}
+    .portfolio-badge a:hover{color:var(--accent2)}
+
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
     @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
-    .reveal{opacity:0;transform:translateY(20px);transition:opacity .7s ease,transform .7s ease}
-    .reveal.visible{opacity:1;transform:none}
-    @media(max-width:700px){nav{padding:1rem 1.5rem}.nav-links{display:none}.container{padding:0 1.5rem}header{padding:6rem 0 3.5rem}.hero-stats{flex-wrap:wrap;gap:1.5rem}.projects-grid{grid-template-columns:1fr}.about-grid{grid-template-columns:1fr}.contact-grid{grid-template-columns:1fr}.contact-wide{grid-column:auto}.cta-band{flex-direction:column;align-items:flex-start}}
+
+    .selected-date-label{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--accent2);letter-spacing:.06em;margin-top:.6rem;text-align:center;min-height:1em}
   </style>
 </head>
 <body>
 
-<div class="cursor-glow" id="glow"></div>
+<div class="glow" id="glow"></div>
+<a href="index.html" class="back-link">← Portfolio</a>
+<div class="toast-wrap" id="toastWrap"></div>
 
-<nav>
-  <div class="nav-logo"><span>// </span>celestine.ateka</div>
-  <ul class="nav-links">
-    <li><a href="#skills">Skills</a></li>
-    <li><a href="#projects">Projects</a></li>
-    <li><a href="#about">About</a></li>
-    <li><a href="#contact">Contact</a></li>
-  </ul>
-  <div class="status-pill">
-    <div class="status-dot"></div>
-    Available for work
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <span class="modal-title-text" id="modalTitleText">Task Detail</span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer" id="modalFooter"></div>
   </div>
-</nav>
-
-<div class="container">
-
-  <header>
-    <p class="hero-tag">Software Engineer &nbsp;·&nbsp; Nairobi, KE</p>
-    <h1>Celestine<br><span class="name-accent">Ateka.</span></h1>
-    <p class="hero-desc">I build secure, user-focused software — from web apps to cybersecurity tools. Passionate about clean code and robust systems.</p>
-    <div class="hero-cta">
-      <a href="#projects" class="btn-primary">View Projects →</a>
-      <a href="mailto:atekacelestine@gmail.com" class="btn-ghost">Get in Touch</a>
-    </div>
-    <div class="hero-stats">
-      <div class="stat-item"><div class="num">2<span>+</span></div><div class="lbl">Projects Shipped</div></div>
-      <div class="stat-item"><div class="num">6<span>+</span></div><div class="lbl">Technologies</div></div>
-      <div class="stat-item"><div class="num">100<span>%</span></div><div class="lbl">Open to Opportunities</div></div>
-    </div>
-  </header>
-
-  <section id="skills">
-    <p class="sec-label reveal">01 / Skills</p>
-    <h2 class="sec-title reveal">What I Work With</h2>
-    <div class="skills-grid">
-      <div class="skill-card reveal"><div class="skill-icon" style="background:rgba(249,124,74,0.12)">🌐</div><div class="skill-name">HTML</div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="90" style="background:var(--orange)"></div></div><div class="skill-pct">90%</div></div>
-      <div class="skill-card reveal"><div class="skill-icon" style="background:rgba(56,189,248,0.12)">🎨</div><div class="skill-name">CSS</div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="85" style="background:var(--blue)"></div></div><div class="skill-pct">85%</div></div>
-      <div class="skill-card reveal"><div class="skill-icon" style="background:rgba(251,191,36,0.12)">⚡</div><div class="skill-name">JavaScript</div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="80" style="background:#fbbf24"></div></div><div class="skill-pct">80%</div></div>
-      <div class="skill-card reveal"><div class="skill-icon" style="background:rgba(74,222,156,0.12)">🐍</div><div class="skill-name">Python</div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="75" style="background:var(--green)"></div></div><div class="skill-pct">75%</div></div>
-      <div class="skill-card reveal"><div class="skill-icon" style="background:rgba(232,121,160,0.12)">🔐</div><div class="skill-name">Cybersecurity</div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="70" style="background:var(--pink)"></div></div><div class="skill-pct">70%</div></div>
-      <div class="skill-card reveal"><div class="skill-icon" style="background:rgba(139,124,248,0.12)">🔀</div><div class="skill-name">Git & GitHub</div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="82" style="background:var(--accent)"></div></div><div class="skill-pct">82%</div></div>
-    </div>
-  </section>
-
-  <section id="projects">
-    <p class="sec-label reveal">02 / Projects</p>
-    <h2 class="sec-title reveal">Selected Work</h2>
-    <div class="projects-grid">
-      <div class="project-card purple reveal">
-        <div class="project-header">
-          <div class="project-icon" style="background:rgba(232,121,160,0.12)">🛡️</div>
-          <span class="project-status status-wip">In Progress</span>
-        </div>
-        <h3>Cybersecurity Lab</h3>
-        <p>A hands-on environment for vulnerability analysis and security testing — exploring real-world attack vectors, penetration testing workflows, and defensive techniques in a controlled sandbox.</p>
-        <div class="project-tags">
-          <span class="tag">Python</span><span class="tag">Kali Linux</span><span class="tag">Nmap</span><span class="tag">OWASP</span>
-        </div>
-        <div class="project-links">
-          <a href="#" class="plink plink-solid">↗ GitHub</a>
-        </div>
-      </div>
-      <div class="project-card orange reveal">
-        <div class="project-header">
-          <div class="project-icon" style="background:rgba(249,124,74,0.12)">✅</div>
-          <span class="project-status status-live">● Live</span>
-        </div>
-        <h3>Task Manager App</h3>
-        <p>A clean JavaScript application for creating, editing, and managing daily tasks. Features persistent local storage, drag-and-drop reordering, and a responsive mobile-first interface.</p>
-        <div class="project-tags">
-          <span class="tag">JavaScript</span><span class="tag">HTML/CSS</span><span class="tag">LocalStorage</span>
-        </div>
-        <div class="project-links">
-          <a href="https://github.com/atekacelestine/task-manager" target="_blank" rel="noopener" class="plink plink-solid">↗ GitHub</a>
-          <a href="https://atekacelestine.github.io/Portfolio-website.github.io/" target="_blank" rel="noopener" class="plink plink-ghost">⬡ Live Demo</a>
-        </div>
-      </div>
-      <div class="project-card green reveal">
-        <div class="project-header">
-          <div class="project-icon" style="background:rgba(74,222,156,0.12)">🌐</div>
-          <span class="project-status status-live">● Live</span>
-        </div>
-        <h3>Portfolio Website</h3>
-        <p>A personal portfolio site showcasing projects and skills — built from scratch with clean semantic HTML, responsive CSS, and smooth scroll interactions. No frameworks, just craft.</p>
-        <div class="project-tags">
-          <span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span>
-        </div>
-        <div class="project-links">
-          <a href="https://github.com/atekacelestine" target="_blank" rel="noopener" class="plink plink-solid">↗ GitHub</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="about">
-    <p class="sec-label reveal">03 / About</p>
-    <h2 class="sec-title reveal">A Bit About Me</h2>
-    <div class="about-grid">
-      <div class="about-text reveal">
-        <h3>Hey, I'm Celestine 👋</h3>
-        <p>A software engineer based in Nairobi, Kenya — focused on building clean, secure web applications. I thrive at the intersection of development and cybersecurity, writing code that's both functional and defensible.</p>
-        <p>When I'm not coding, I'm exploring the latest in ethical hacking, contributing to open-source, and levelling up my Python skills.</p>
-        <div class="interests-row">
-          <div class="interest-chip"><div class="chip-dot" style="background:var(--accent)"></div>Web Dev</div>
-          <div class="interest-chip"><div class="chip-dot" style="background:var(--pink)"></div>Security</div>
-          <div class="interest-chip"><div class="chip-dot" style="background:var(--green)"></div>Open Source</div>
-          <div class="interest-chip"><div class="chip-dot" style="background:var(--orange)"></div>CTF Challenges</div>
-        </div>
-      </div>
-      <div class="terminal reveal">
-        <div class="terminal-bar">
-          <div class="t-dot" style="background:#ff5f57"></div>
-          <div class="t-dot" style="background:#febc2e"></div>
-          <div class="t-dot" style="background:#28c840"></div>
-        </div>
-        <div class="terminal-body">
-          <div><span class="t-prompt">➜</span> <span class="t-cmd">cat celestine.json</span></div>
-          <div><span class="t-comment">{</span></div>
-          <div>&nbsp;&nbsp;<span class="t-key">"name"</span>: <span class="t-str">"Celestine Ateka"</span>,</div>
-          <div>&nbsp;&nbsp;<span class="t-key">"role"</span>: <span class="t-str">"Software Engineer"</span>,</div>
-          <div>&nbsp;&nbsp;<span class="t-key">"location"</span>: <span class="t-str">"Nairobi, KE 🌍"</span>,</div>
-          <div>&nbsp;&nbsp;<span class="t-key">"focus"</span>: [</div>
-          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-str">"Web Development"</span>,</div>
-          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-str">"Cybersecurity"</span></div>
-          <div>&nbsp;&nbsp;],</div>
-          <div>&nbsp;&nbsp;<span class="t-key">"available"</span>: <span class="t-num">true</span>,</div>
-          <div>&nbsp;&nbsp;<span class="t-key">"coffee"</span>: <span class="t-str">"always ☕"</span></div>
-          <div><span class="t-comment">}</span></div>
-          <div style="margin-top:.5rem"><span class="t-prompt">➜</span> <span class="t-cmd">_</span><span style="animation:blink 1s step-end infinite;color:var(--accent)">|</span></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="contact">
-    <p class="sec-label reveal">04 / Contact</p>
-    <h2 class="sec-title reveal">Let's Connect</h2>
-    <div class="cta-band reveal">
-      <div>
-        <h3>Open to opportunities 🚀</h3>
-        <p>Looking for internships, freelance work, or full-time roles in software engineering or cybersecurity.</p>
-      </div>
-      <a href="mailto:atekacelestine@gmail.com" class="btn-primary" style="white-space:nowrap">Send Email →</a>
-    </div>
-    <div class="contact-grid">
-      <a href="mailto:atekacelestine@gmail.com" class="contact-card">
-        <div class="contact-icon" style="background:rgba(139,124,248,0.12)">📧</div>
-        <div><div class="contact-label">Email</div><div class="contact-value">atekacelestine@gmail.com</div></div>
-      </a>
-      <a href="https://github.com/atekacelestine" target="_blank" rel="noopener" class="contact-card">
-        <div class="contact-icon" style="background:rgba(255,255,255,0.06)">💻</div>
-        <div><div class="contact-label">GitHub</div><div class="contact-value">github.com/atekacelestine</div></div>
-      </a>
-      <a href="https://linkedin.com/in/celestine-ateka" target="_blank" rel="noopener" class="contact-card contact-wide">
-        <div class="contact-icon" style="background:rgba(56,189,248,0.12)">🔗</div>
-        <div><div class="contact-label">LinkedIn</div><div class="contact-value">linkedin.com/in/celestine-ateka</div></div>
-      </a>
-    </div>
-  </section>
-
-  <footer>
-    <span>© 2026 Celestine Ateka</span>
-    <span>Built with❤️</span>
-  </footer>
-
 </div>
 
-<style>@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}</style>
+<div class="app">
+  <div class="app-header">
+    <div class="app-eyebrow">Project · Task Manager</div>
+    <h1 class="app-title">Get Things<br><span class="hi">Done.</span></h1>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat"><div class="val" id="statTotal" style="color:var(--text)">0</div><div class="lbl">Total</div></div>
+    <div class="stat"><div class="val" id="statActive" style="color:var(--accent)">0</div><div class="lbl">Active</div></div>
+    <div class="stat"><div class="val" id="statDone" style="color:var(--green)">0</div><div class="lbl">Done</div></div>
+    <div class="stat"><div class="val" id="statToday" style="color:var(--blue)">0</div><div class="lbl">Today</div></div>
+    <div class="stat"><div class="val" id="statOverdue" style="color:var(--red)">0</div><div class="lbl">Overdue</div></div>
+  </div>
+
+  <div class="main-grid">
+
+    <!-- LEFT: ADD TASK + CALENDAR -->
+    <div style="display:flex;flex-direction:column;gap:1.2rem">
+
+      <!-- ADD TASK PANEL -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">New Task</span>
+        </div>
+        <div class="panel-body">
+          <div class="form-group">
+            <label class="form-label">Title *</label>
+            <input id="fTitle" class="form-input" placeholder="Task title…" autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea id="fDesc" class="form-input" placeholder="Optional details — or list options: Item 1, Item 2, Item 3" rows="2"></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group" style="margin-bottom:0">
+              <label class="form-label">Category</label>
+              <select id="fCat" class="form-input">
+                <option value="">— None —</option>
+                <option value="Work">Work</option>
+                <option value="Personal">Personal</option>
+                <option value="Study">Study</option>
+                <option value="Health">Health</option>
+                <option value="Finance">Finance</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom:0">
+              <label class="form-label">Priority</label>
+              <select id="fPriority" class="form-input">
+                <option value="med">Medium</option>
+                <option value="high">High</option>
+                <option value="low">Low</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row" style="margin-top:.9rem">
+            <div class="form-group" style="margin-bottom:0">
+              <label class="form-label">Due Date</label>
+              <input id="fDate" class="form-input" type="date">
+            </div>
+            <div class="form-group" style="margin-bottom:0">
+              <label class="form-label">Due Time</label>
+              <input id="fTime" class="form-input" type="time">
+            </div>
+          </div>
+          <div class="form-group" style="margin-top:.9rem;margin-bottom:0">
+            <label class="form-label">Reminder</label>
+            <select id="fReminder" class="form-input">
+              <option value="">No reminder</option>
+              <option value="5">5 minutes before</option>
+              <option value="15">15 minutes before</option>
+              <option value="30">30 minutes before</option>
+              <option value="60">1 hour before</option>
+              <option value="1440">1 day before</option>
+            </select>
+          </div>
+          <button class="add-btn" onclick="addTask()" style="margin-top:1rem">+ Add Task</button>
+        </div>
+      </div>
+
+      <!-- CALENDAR PANEL -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Calendar</span>
+        </div>
+        <div class="panel-body">
+          <div class="cal-nav">
+            <button class="cal-arrow" onclick="changeMonth(-1)">‹</button>
+            <span class="cal-month" id="calMonth"></span>
+            <button class="cal-arrow" onclick="changeMonth(1)">›</button>
+          </div>
+          <div class="cal-grid" id="calGrid"></div>
+          <div class="selected-date-label" id="selectedDateLabel"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT: TASK LIST -->
+    <div class="panel" style="display:flex;flex-direction:column">
+      <div class="panel-header">
+        <span class="panel-title" id="listPanelTitle">All Tasks</span>
+        <span id="listCount" style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--muted)"></span>
+      </div>
+      <div class="filter-tabs">
+        <button class="tab active" onclick="setFilter('all',this)">All</button>
+        <button class="tab" onclick="setFilter('active',this)">Active</button>
+        <button class="tab" onclick="setFilter('done',this)">Done</button>
+        <button class="tab" onclick="setFilter('today',this)">Today</button>
+        <button class="tab" onclick="setFilter('overdue',this)">Overdue</button>
+        <button class="tab" onclick="setFilter('high',this)">🔴 High</button>
+      </div>
+      <div class="task-list" id="taskList"></div>
+      <div class="bottom-bar">
+        <button class="ghost-btn" onclick="clearDone()">Clear Done</button>
+        <button class="ghost-btn" onclick="clearAll()">Clear All</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="portfolio-badge">
+    Built by <a href="index.html">Celestine Ateka</a> &nbsp;·&nbsp;
+    <a href="https://github.com/atekacelestine/task-manager" target="_blank" rel="noopener">GitHub ↗</a>
+  </div>
+</div>
 
 <script>
-  const glow = document.getElementById('glow');
-  document.addEventListener('mousemove', e => {
-    glow.style.left = e.clientX + 'px';
-    glow.style.top = e.clientY + 'px';
+// ── CURSOR GLOW ──────────────────────────────────
+const glowEl = document.getElementById('glow');
+document.addEventListener('mousemove', e => {
+  glowEl.style.left = e.clientX + 'px';
+  glowEl.style.top  = e.clientY + 'px';
+});
+
+// ── STATE ─────────────────────────────────────────
+let tasks  = JSON.parse(localStorage.getItem('ca_tasks2') || '[]');
+let filter = 'all';
+let calYear, calMonth, selectedDate = null;
+let reminderTimers = {};
+
+const now = () => new Date();
+const todayStr = () => now().toISOString().slice(0,10);
+
+function save() { localStorage.setItem('ca_tasks2', JSON.stringify(tasks)); }
+
+// ── ADD TASK ──────────────────────────────────────
+function addTask() {
+  const title = document.getElementById('fTitle').value.trim();
+  if (!title) { toast('⚠️', 'Title is required'); document.getElementById('fTitle').focus(); return; }
+
+  const dueDate  = document.getElementById('fDate').value;
+  const dueTime  = document.getElementById('fTime').value;
+  const reminder = document.getElementById('fReminder').value;
+
+  const desc = document.getElementById('fDesc').value.trim();
+
+  const task = {
+    id:       Date.now(),
+    title,
+    desc,
+    cat:      document.getElementById('fCat').value,
+    priority: document.getElementById('fPriority').value,
+    dueDate,
+    dueTime,
+    reminder,
+    done:     false,
+    subDone:  desc.includes(',') ? Array(desc.split(',').filter(s=>s.trim()).length).fill(false) : [],
+    created:  new Date().toISOString()
+  };
+
+  tasks.unshift(task);
+  save();
+
+  // schedule reminder
+  if (reminder && dueDate) scheduleReminder(task);
+
+  // reset form (keep date)
+  document.getElementById('fTitle').value    = '';
+  document.getElementById('fDesc').value     = '';
+  document.getElementById('fCat').value      = '';
+  document.getElementById('fPriority').value = 'med';
+  document.getElementById('fTime').value     = '';
+  document.getElementById('fReminder').value = '';
+
+  toast('✅', `"${title}" added`);
+  render();
+  renderCal();
+}
+
+// ── REMINDER SCHEDULING ───────────────────────────
+function scheduleReminder(task) {
+  if (!task.dueDate || !task.reminder) return;
+  const timeStr = task.dueTime || '09:00';
+  const due  = new Date(`${task.dueDate}T${timeStr}`);
+  const fire = new Date(due.getTime() - task.reminder * 60 * 1000);
+  const ms   = fire.getTime() - Date.now();
+  if (ms <= 0) return;
+
+  if (reminderTimers[task.id]) clearTimeout(reminderTimers[task.id]);
+  reminderTimers[task.id] = setTimeout(() => {
+    toast('🔔', `Reminder: "${task.title}"`);
+    // browser notification
+    if (Notification && Notification.permission === 'granted') {
+      new Notification('Task Reminder', {
+        body: task.title + (task.desc ? '\n' + task.desc : ''),
+        icon: ''
+      });
+    }
+  }, ms);
+}
+
+// Request notification permission on load
+if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
+  Notification.requestPermission();
+}
+
+// Re-schedule all reminders on load
+tasks.forEach(t => { if (!t.done) scheduleReminder(t); });
+
+// ── HELPERS ───────────────────────────────────────
+function isOverdue(t) {
+  if (!t.dueDate || t.done) return false;
+  const today = todayStr();
+  if (t.dueDate < today) return true;
+  if (t.dueDate === today && t.dueTime) {
+    return new Date(`${t.dueDate}T${t.dueTime}`) < now();
+  }
+  return false;
+}
+
+function isToday(t) {
+  return t.dueDate === todayStr();
+}
+
+function fmtDate(d, ti) {
+  if (!d) return '';
+  const dt = new Date(d + 'T00:00:00');
+  const label = dt.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
+  return ti ? label + ' ' + ti : label;
+}
+
+// ── FILTER ────────────────────────────────────────
+function setFilter(f, btn) {
+  filter = f;
+  selectedDate = null;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderCal();
+  render();
+}
+
+function getFiltered() {
+  if (selectedDate)    return tasks.filter(t => t.dueDate === selectedDate);
+  if (filter === 'active')  return tasks.filter(t => !t.done);
+  if (filter === 'done')    return tasks.filter(t => t.done);
+  if (filter === 'today')   return tasks.filter(t => isToday(t));
+  if (filter === 'overdue') return tasks.filter(t => isOverdue(t));
+  if (filter === 'high')    return tasks.filter(t => t.priority === 'high');
+  return tasks;
+}
+
+// ── TOGGLE / DELETE ───────────────────────────────
+function toggleDone(id, e) {
+  e && e.stopPropagation();
+  const t = tasks.find(t => t.id === id);
+  if (!t) return;
+  t.done = !t.done;
+  if (t.done && reminderTimers[id]) { clearTimeout(reminderTimers[id]); delete reminderTimers[id]; }
+  if (!t.done) scheduleReminder(t);
+  save(); render(); renderCal(); updateStats();
+}
+
+function deleteTask(id, e) {
+  e && e.stopPropagation();
+  if (reminderTimers[id]) { clearTimeout(reminderTimers[id]); delete reminderTimers[id]; }
+  tasks = tasks.filter(t => t.id !== id);
+  save(); render(); renderCal(); updateStats();
+  closeModal();
+  toast('🗑️', 'Task deleted');
+}
+
+function clearDone() { tasks = tasks.filter(t => !t.done); save(); render(); renderCal(); updateStats(); toast('🧹','Cleared completed tasks'); }
+function clearAll()  { if (!tasks.length) return; tasks = []; save(); render(); renderCal(); updateStats(); toast('🗑️','All tasks cleared'); }
+
+// ── STATS ─────────────────────────────────────────
+function updateStats() {
+  const today = todayStr();
+  document.getElementById('statTotal').textContent   = tasks.length;
+  document.getElementById('statActive').textContent  = tasks.filter(t => !t.done).length;
+  document.getElementById('statDone').textContent    = tasks.filter(t => t.done).length;
+  document.getElementById('statToday').textContent   = tasks.filter(t => isToday(t) && !t.done).length;
+  document.getElementById('statOverdue').textContent = tasks.filter(t => isOverdue(t)).length;
+}
+
+// ── RENDER TASK LIST ──────────────────────────────
+function render() {
+  updateStats();
+  const list = document.getElementById('taskList');
+  const filtered = getFiltered();
+  const titleEl = document.getElementById('listPanelTitle');
+  const countEl = document.getElementById('listCount');
+
+  if (selectedDate) {
+    const dt = new Date(selectedDate + 'T00:00:00');
+    titleEl.textContent = dt.toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'});
+  } else {
+    const labels = {all:'All Tasks',active:'Active',done:'Completed',today:"Today's Tasks",overdue:'Overdue',high:'High Priority'};
+    titleEl.textContent = labels[filter] || 'Tasks';
+  }
+  countEl.textContent = filtered.length + ' task' + (filtered.length !== 1 ? 's' : '');
+
+  if (!filtered.length) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon">✦</div><p>No tasks here</p></div>`;
+    return;
+  }
+
+  const sorted = [...filtered].sort((a,b) => {
+    if (!a.dueDate && b.dueDate) return 1;
+    if (a.dueDate && !b.dueDate) return -1;
+    if (a.dueDate && b.dueDate && a.dueDate !== b.dueDate) return a.dueDate.localeCompare(b.dueDate);
+    const pOrd = {high:0,med:1,low:2};
+    return pOrd[a.priority] - pOrd[b.priority];
   });
 
-  const revealObs = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.style.transitionDelay = (parseFloat(e.target.dataset.delay || 0)) + 's';
-        e.target.classList.add('visible');
-        revealObs.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0.1 });
+  list.innerHTML = sorted.map(t => {
+    const over = isOverdue(t);
+    const parts = parseSubItems(t.desc);
+    const isMulti = parts.length > 1;
+    const doneCount = isMulti ? (t.subDone || []).filter(Boolean).length : 0;
+    const allSubDone = isMulti && doneCount === parts.length;
 
-  document.querySelectorAll('.reveal').forEach((el, i) => {
-    el.dataset.delay = (i % 6) * 0.07;
-    revealObs.observe(el);
-  });
+    const subItemsHtml = isMulti ? `
+      <div class="sub-items">
+        ${parts.map((p, i) => {
+          const checked = t.subDone && t.subDone[i];
+          return `<div class="sub-item" onclick="toggleSubItem(${t.id},${i},event)">
+            <div class="sub-icon ${checked ? 'done-icon' : 'undone-icon'}">${checked ? '✓' : '✕'}</div>
+            <span class="sub-label ${checked ? 'done-label' : ''}">${escHtml(p)}</span>
+          </div>`;
+        }).join('')}
+        <div class="sub-progress">
+          <div class="sub-progress-track"><div class="sub-progress-fill" style="width:${Math.round(doneCount/parts.length*100)}%"></div></div>
+          <span class="sub-progress-label">${doneCount}/${parts.length}</span>
+        </div>
+      </div>` : '';
 
-  const barObs = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.querySelectorAll('.skill-bar-fill').forEach(bar => {
-          bar.style.width = bar.dataset.width + '%';
-        });
-        barObs.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0.3 });
+    return `
+    <div class="task-item p-${t.priority} ${(t.done || allSubDone) ? 'done-item' : ''}" onclick="openModal(${t.id},false,event)">
+      <div class="ti-row1">
+        <button class="ti-check" onclick="toggleDone(${t.id},event)" title="Toggle done">✓</button>
+        <div class="ti-content">
+          <div class="ti-title">${escHtml(t.title)}</div>
+          ${!isMulti && t.desc ? `<div class="ti-desc">${escHtml(t.desc)}</div>` : ''}
+        </div>
+        <button class="ti-edit" onclick="openModal(${t.id},true,event)" title="Edit task">✎</button>
+        <button class="ti-del" onclick="deleteTask(${t.id},event)" title="Delete">✕</button>
+      </div>
+      ${subItemsHtml}
+      <div class="ti-row2">
+        <span class="badge b-${t.priority}">${t.priority.toUpperCase()}</span>
+        ${t.cat ? `<span class="badge b-cat">${escHtml(t.cat)}</span>` : ''}
+        ${isMulti ? `<span class="badge b-cat" style="background:rgba(139,124,248,0.08);color:var(--accent2);border-color:rgba(139,124,248,0.15)">${doneCount}/${parts.length} done</span>` : ''}
+        ${t.dueDate ? `<span class="badge ${over && !t.done ? 'b-overdue' : 'b-date'}">${over && !t.done ? '⚠ ' : '📅 '}${fmtDate(t.dueDate, t.dueTime)}</span>` : ''}
+        ${t.reminder ? `<span class="badge b-reminder">🔔 ${reminderLabel(t.reminder)}</span>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
 
-  document.querySelectorAll('.skills-grid').forEach(g => barObs.observe(g));
+// ── SUB-ITEMS ─────────────────────────────────────
+function parseSubItems(desc) {
+  if (!desc || !desc.includes(',')) return [];
+  return desc.split(',').map(s => s.trim()).filter(Boolean);
+}
 
-  const sections = document.querySelectorAll('section[id]');
-  const links = document.querySelectorAll('.nav-links a');
-  window.addEventListener('scroll', () => {
-    let cur = '';
-    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) cur = s.id; });
-    links.forEach(l => {
-      l.style.color = l.getAttribute('href') === '#' + cur ? 'var(--text)' : '';
-    });
-  });
+function toggleSubItem(taskId, index, e) {
+  e && e.stopPropagation();
+  const t = tasks.find(t => t.id === taskId);
+  if (!t) return;
+  const parts = parseSubItems(t.desc);
+  if (!t.subDone || t.subDone.length !== parts.length) {
+    t.subDone = Array(parts.length).fill(false);
+  }
+  t.subDone[index] = !t.subDone[index];
+  // auto-mark whole task done if all sub-items checked
+  if (t.subDone.every(Boolean)) {
+    t.done = true;
+  } else if (t.done) {
+    t.done = false;
+  }
+  save(); render(); renderCal(); updateStats();
+}
+
+function reminderLabel(r) {
+  const map = {'5':'5m before','15':'15m before','30':'30m before','60':'1h before','1440':'1d before'};
+  return map[r] || r + 'm';
+}
+
+// ── MODAL ─────────────────────────────────────────
+function openModal(id, editMode, e) {
+  if (e) e.stopPropagation();
+  const t = tasks.find(t => t.id === id);
+  if (!t) return;
+
+  if (editMode) {
+    showEditModal(t);
+  } else {
+    showViewModal(t);
+  }
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function showViewModal(t) {
+  const over = isOverdue(t);
+  const parts = parseSubItems(t.desc);
+  const isMulti = parts.length > 1;
+  const doneCount = isMulti ? (t.subDone || []).filter(Boolean).length : 0;
+
+  const subHtml = isMulti ? `
+    <span class="modal-label">Items (${doneCount}/${parts.length} done)</span>
+    <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:.5rem">
+      ${parts.map((p, i) => {
+        const checked = t.subDone && t.subDone[i];
+        return `<div style="display:flex;align-items:center;gap:.5rem;padding:.3rem .4rem;border-radius:6px;background:var(--bg3)">
+          <div style="width:16px;height:16px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;flex-shrink:0;${checked ? 'background:rgba(74,222,156,0.15);color:var(--green);border:1.5px solid rgba(74,222,156,0.35)' : 'background:rgba(248,113,113,0.1);color:var(--red);border:1.5px solid rgba(248,113,113,0.25)'}">${checked ? '✓' : '✕'}</div>
+          <span style="font-size:.82rem;font-weight:500;${checked ? 'text-decoration:line-through;color:var(--muted)' : ''}">${escHtml(p)}</span>
+        </div>`;
+      }).join('')}
+    </div>` : '';
+
+  document.getElementById('modalTitleText').textContent = t.title;
+  document.getElementById('modalBody').innerHTML = `
+    ${subHtml}
+    ${t.desc ? `<span class="modal-label">Description</span><div class="modal-desc">${escHtml(t.desc)}</div>` : ''}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-top:${(t.desc||isMulti)?'1rem':'0'}">
+      <div><span class="modal-label">Priority</span><div><span class="badge b-${t.priority}" style="font-size:.72rem;padding:.25rem .6rem">${t.priority.toUpperCase()}</span></div></div>
+      <div><span class="modal-label">Status</span><div style="font-size:.88rem;font-weight:600;color:${t.done?'var(--green)':over?'var(--red)':'var(--accent)'}">${t.done ? '✓ Done' : over ? '⚠ Overdue' : '● Active'}</div></div>
+      ${t.cat ? `<div><span class="modal-label">Category</span><div><span class="badge b-cat" style="font-size:.72rem;padding:.25rem .6rem">${escHtml(t.cat)}</span></div></div>` : ''}
+      ${t.dueDate ? `<div><span class="modal-label">Due</span><div class="modal-val" style="font-size:.85rem">${fmtDate(t.dueDate, t.dueTime)}</div></div>` : ''}
+      ${t.reminder ? `<div><span class="modal-label">Reminder</span><div class="modal-val" style="font-size:.85rem">🔔 ${reminderLabel(t.reminder)}</div></div>` : ''}
+    </div>
+    <span class="modal-label" style="margin-top:1rem">Created</span>
+    <div class="modal-val" style="font-size:.78rem;color:var(--muted)">${new Date(t.created).toLocaleString()}</div>
+  `;
+  document.getElementById('modalFooter').innerHTML = `
+    <button class="modal-btn primary" onclick="toggleDone(${t.id}); render(); renderCal(); closeModal();">${t.done ? 'Mark Active' : 'Mark Done'}</button>
+    <button class="modal-btn" onclick="showEditModal(tasks.find(x=>x.id===${t.id}))">✎ Edit</button>
+    <button class="modal-btn danger" onclick="deleteTask(${t.id})">Delete</button>
+    <button class="modal-btn" onclick="closeModal()">Close</button>
+  `;
+}
+
+function showEditModal(t) {
+  document.getElementById('modalTitleText').textContent = 'Edit Task';
+  document.getElementById('modalBody').innerHTML = `
+    <div class="edit-form">
+      <div class="form-group">
+        <label class="form-label">Title *</label>
+        <input id="eFTitle" class="form-input" value="${escAttr(t.title)}" placeholder="Task title…" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea id="eFDesc" class="form-input" placeholder="Optional details — or list options: Item 1, Item 2, Item 3" rows="2">${escHtml(t.desc||'')}</textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">Category</label>
+          <select id="eFCat" class="form-input">
+            <option value="" ${!t.cat?'selected':''}>— None —</option>
+            ${['Work','Personal','Study','Health','Finance','Other'].map(c=>`<option value="${c}" ${t.cat===c?'selected':''}>${c}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">Priority</label>
+          <select id="eFPriority" class="form-input">
+            <option value="high" ${t.priority==='high'?'selected':''}>High</option>
+            <option value="med"  ${t.priority==='med'?'selected':''}>Medium</option>
+            <option value="low"  ${t.priority==='low'?'selected':''}>Low</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row" style="margin-top:.85rem">
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">Due Date</label>
+          <input id="eFDate" class="form-input" type="date" value="${t.dueDate||''}">
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">Due Time</label>
+          <input id="eFTime" class="form-input" type="time" value="${t.dueTime||''}">
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:.85rem;margin-bottom:0">
+        <label class="form-label">Reminder</label>
+        <select id="eFReminder" class="form-input">
+          <option value=""    ${!t.reminder?'selected':''}>No reminder</option>
+          <option value="5"   ${t.reminder==='5'?'selected':''}>5 minutes before</option>
+          <option value="15"  ${t.reminder==='15'?'selected':''}>15 minutes before</option>
+          <option value="30"  ${t.reminder==='30'?'selected':''}>30 minutes before</option>
+          <option value="60"  ${t.reminder==='60'?'selected':''}>1 hour before</option>
+          <option value="1440"${t.reminder==='1440'?'selected':''}>1 day before</option>
+        </select>
+      </div>
+    </div>
+  `;
+  // focus title
+  setTimeout(() => { const el = document.getElementById('eFTitle'); if(el) el.focus(); }, 50);
+
+  document.getElementById('modalFooter').innerHTML = `
+    <button class="modal-btn success" onclick="saveEdit(${t.id})">✓ Save Changes</button>
+    <button class="modal-btn" onclick="showViewModal(tasks.find(x=>x.id===${t.id}))">← Back</button>
+    <button class="modal-btn danger" onclick="deleteTask(${t.id})">Delete</button>
+  `;
+}
+
+function saveEdit(id) {
+  const t = tasks.find(t => t.id === id);
+  if (!t) return;
+
+  const title = (document.getElementById('eFTitle').value || '').trim();
+  if (!title) { toast('⚠️', 'Title cannot be empty'); document.getElementById('eFTitle').focus(); return; }
+
+  // cancel old reminder timer
+  if (reminderTimers[id]) { clearTimeout(reminderTimers[id]); delete reminderTimers[id]; }
+
+  t.title    = title;
+  t.desc     = (document.getElementById('eFDesc').value || '').trim();
+  t.cat      = document.getElementById('eFCat').value;
+  t.priority = document.getElementById('eFPriority').value;
+  t.dueDate  = document.getElementById('eFDate').value;
+  t.dueTime  = document.getElementById('eFTime').value;
+  t.reminder = document.getElementById('eFReminder').value;
+  t.edited   = new Date().toISOString();
+  // rebuild subDone to match new desc parts
+  const newDesc = t.desc;
+  const newParts = parseSubItems(newDesc);
+  if (newParts.length > 1) {
+    const old = t.subDone || [];
+    t.subDone = newParts.map((_, i) => old[i] || false);
+    t.done = t.subDone.every(Boolean);
+  } else {
+    t.subDone = [];
+  }
+
+  save();
+  if (!t.done) scheduleReminder(t);
+  render();
+  renderCal();
+  updateStats();
+  toast('✏️', `"${title}" updated`);
+  closeModal();
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+
+document.getElementById('modalOverlay').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeModal();
+});
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// ── CALENDAR ──────────────────────────────────────
+function initCal() {
+  const d = new Date();
+  calYear  = d.getFullYear();
+  calMonth = d.getMonth();
+  renderCal();
+}
+
+function changeMonth(dir) {
+  calMonth += dir;
+  if (calMonth > 11) { calMonth = 0;  calYear++; }
+  if (calMonth < 0)  { calMonth = 11; calYear--; }
+  selectedDate = null;
+  document.getElementById('selectedDateLabel').textContent = '';
+  renderCal();
+  render();
+}
+
+function renderCal() {
+  const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('calMonth').textContent = `${monthNames[calMonth]} ${calYear}`;
+
+  const today = todayStr();
+  const taskDates   = new Set(tasks.map(t => t.dueDate).filter(Boolean));
+  const reminDates  = new Set(tasks.filter(t => t.reminder && t.dueDate).map(t => t.dueDate));
+
+  const firstDay = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const daysInPrev  = new Date(calYear, calMonth, 0).getDate();
+
+  const dayNames = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+  let html = dayNames.map(d => `<div class="cal-day-name">${d}</div>`).join('');
+
+  // prev month filler
+  for (let i = firstDay - 1; i >= 0; i--) {
+    const dateStr = `${calYear}-${String(calMonth === 0 ? 12 : calMonth).padStart(2,'0')}-${String(daysInPrev - i).padStart(2,'0')}`;
+    html += `<div class="cal-day other-month empty">${daysInPrev - i}</div>`;
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    let cls = 'cal-day';
+    if (dateStr === today)         cls += ' today';
+    if (dateStr === selectedDate)  cls += ' selected';
+    if (taskDates.has(dateStr))    cls += ' has-task';
+    if (reminDates.has(dateStr))   cls += ' has-reminder';
+    html += `<div class="${cls}" onclick="selectDate('${dateStr}')">${d}</div>`;
+  }
+
+  document.getElementById('calGrid').innerHTML = html;
+}
+
+function selectDate(dateStr) {
+  if (selectedDate === dateStr) {
+    selectedDate = null;
+    document.getElementById('selectedDateLabel').textContent = '';
+    // deactivate all filter tabs, reactivate 'all'
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelector('.tab').classList.add('active');
+    filter = 'all';
+  } else {
+    selectedDate = dateStr;
+    // prefill date input
+    document.getElementById('fDate').value = dateStr;
+    const dt = new Date(dateStr + 'T00:00:00');
+    document.getElementById('selectedDateLabel').textContent =
+      dt.toLocaleDateString('en-US',{weekday:'long', month:'long', day:'numeric'});
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  }
+  render();
+  renderCal();
+}
+
+// ── TOAST ─────────────────────────────────────────
+function toast(icon, msg) {
+  const wrap = document.getElementById('toastWrap');
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.innerHTML = `<span class="toast-icon">${icon}</span>${escHtml(msg)}`;
+  wrap.appendChild(el);
+  setTimeout(() => {
+    el.classList.add('removing');
+    setTimeout(() => el.remove(), 300);
+  }, 3000);
+}
+
+// ── UTILS ─────────────────────────────────────────
+function escHtml(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function escAttr(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── ENTER KEY ─────────────────────────────────────
+document.getElementById('fTitle').addEventListener('keydown', e => {
+  if (e.key === 'Enter') addTask();
+});
+
+// ── INIT ──────────────────────────────────────────
+initCal();
+render();
 </script>
 </body>
 </html>
